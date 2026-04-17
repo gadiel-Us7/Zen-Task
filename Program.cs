@@ -6,8 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+// 1. Configuración de Base de Datos
 builder.Services.AddDbContext<TareasDbContext>(opt =>
     opt.UseSqlite("Data Source=tareas.db"));
+
+// 2. AGREGAR SERVICIO DE CORS (Indispensable para Angular)
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -16,11 +20,17 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+// 3. HABILITAR CORS (Debe ir antes de los endpoints)
+app.UseCors(policy =>
+    policy.AllowAnyOrigin()
+          .AllowAnyMethod()
+          .AllowAnyHeader());
+
 app.UseHttpsRedirection();
 
 // --- ENDPOINTS DEL CRUD ---
 
-// 1. GET - Obtener todas las tareas
+// 1. GET - Obtener todas las tareas (Con filtros para los botones del Front)
 app.MapGet("/api/tareas", async (bool? completada, TareasDbContext db) =>
 {
     var query = db.Tareas.AsQueryable();
@@ -32,9 +42,8 @@ app.MapGet("/api/tareas", async (bool? completada, TareasDbContext db) =>
 
     var resultado = await query.ToListAsync();
 
-    return resultado.Any()
-        ? Results.Ok(resultado)
-        : Results.Ok(new { mensaje = "No hay tareas en la lista." });
+    // Devolvemos la lista (aunque esté vacía) para que Angular no de error
+    return Results.Ok(resultado);
 });
 
 // 2. GET - Obtener una sola tarea por ID
@@ -79,7 +88,6 @@ app.MapDelete("/api/tareas/{id}", async (int id, TareasDbContext db) =>
 app.Run();
 
 // --- MODELO ---
-
 public class Todo
 {
     public int Id { get; set; }
