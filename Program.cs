@@ -4,23 +4,31 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
+// SWAGGER
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// 1. Configuración de Base de Datos
+// 1. Configuración de Base de Datos (Cambiar ruta por sql server local de su PC)
 builder.Services.AddDbContext<TareasDbContext>(opt =>
-    opt.UseSqlite("Data Source=tareas.db"));
+{
+    opt.UseSqlServer("Server=DESKTOP-SF100CR\\SQLEXPRESS;Database=TareasDB;Trusted_Connection=True;TrustServerCertificate=True;");
+});
 
-// 2. AGREGAR SERVICIO DE CORS (Indispensable para Angular)
+// 2. SERVICIO DE CORS
 builder.Services.AddCors();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// ACTIVAR SWAGGER
+app.UseSwagger();
 
-// 3. HABILITAR CORS (Debe ir antes de los endpoints)
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tareas API v1");
+    c.RoutePrefix = "swagger"; // ← esto asegura que funcione en /swagger
+});
+
+// 3. HABILITAR CORS
 app.UseCors(policy =>
     policy.AllowAnyOrigin()
           .AllowAnyMethod()
@@ -30,7 +38,7 @@ app.UseHttpsRedirection();
 
 // --- ENDPOINTS DEL CRUD ---
 
-// 1. GET - Obtener todas las tareas (Con filtros para los botones del Front)
+// 1. GET - Obtener todas las tareas
 app.MapGet("/api/tareas", async (bool? completada, TareasDbContext db) =>
 {
     var query = db.Tareas.AsQueryable();
@@ -41,19 +49,19 @@ app.MapGet("/api/tareas", async (bool? completada, TareasDbContext db) =>
     }
 
     var resultado = await query.ToListAsync();
-
-    // Devolvemos la lista (aunque esté vacía) para que Angular no de error
     return Results.Ok(resultado);
 });
 
-// 2. GET - Obtener una sola tarea por ID
+// 2. GET - Obtener una tarea por ID
 app.MapGet("/api/tareas/{id}", async (int id, TareasDbContext db) =>
 {
     var tarea = await db.Tareas.FindAsync(id);
-    return tarea is not null ? Results.Ok(tarea) : Results.NotFound(new { mensaje = "Tarea no encontrada." });
+    return tarea is not null
+        ? Results.Ok(tarea)
+        : Results.NotFound(new { mensaje = "Tarea no encontrada." });
 });
 
-// 3. POST - Crear una nueva tarea
+// 3. POST - Crear tarea
 app.MapPost("/api/tareas", async ([FromBody] Todo nuevaTarea, TareasDbContext db) =>
 {
     db.Tareas.Add(nuevaTarea);
@@ -61,11 +69,13 @@ app.MapPost("/api/tareas", async ([FromBody] Todo nuevaTarea, TareasDbContext db
     return Results.Created($"/api/tareas/{nuevaTarea.Id}", nuevaTarea);
 });
 
-// 4. PUT - Actualizar una tarea (marcar como completada o cambiar texto)
+// 4. PUT - Actualizar tarea
 app.MapPut("/api/tareas/{id}", async (int id, [FromBody] Todo tareaActualizada, TareasDbContext db) =>
 {
     var tareaOriginal = await db.Tareas.FindAsync(id);
-    if (tareaOriginal is null) return Results.NotFound(new { mensaje = "No se puede actualizar, tarea no encontrada." });
+
+    if (tareaOriginal is null)
+        return Results.NotFound(new { mensaje = "No se puede actualizar, tarea no encontrada." });
 
     tareaOriginal.TaskDescription = tareaActualizada.TaskDescription;
     tareaOriginal.Completed = tareaActualizada.Completed;
@@ -74,16 +84,25 @@ app.MapPut("/api/tareas/{id}", async (int id, [FromBody] Todo tareaActualizada, 
     return Results.Ok(tareaOriginal);
 });
 
-// 5. DELETE - Borrar una tarea
+// 5. DELETE - Eliminar tarea
 app.MapDelete("/api/tareas/{id}", async (int id, TareasDbContext db) =>
 {
     var tarea = await db.Tareas.FindAsync(id);
-    if (tarea is null) return Results.NotFound(new { mensaje = "No se puede borrar, tarea no encontrada." });
+
+    if (tarea is null)
+        return Results.NotFound(new { mensaje = "No se puede borrar, tarea no encontrada." });
 
     db.Tareas.Remove(tarea);
     await db.SaveChangesAsync();
+
     return Results.Ok(new { mensaje = $"Tarea {id} eliminada correctamente." });
 });
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TareasDbContext>();
+    db.Database.EnsureCreated();
+}
 
 app.Run();
 
@@ -91,14 +110,18 @@ app.Run();
 public class Todo
 {
     public int Id { get; set; }
+
     [JsonPropertyName("todo")]
     public string TaskDescription { get; set; } = string.Empty;
+
     [JsonPropertyName("completed")]
     public bool Completed { get; set; }
 }
 
+// --- DB CONTEXT ---
 public class TareasDbContext : DbContext
 {
     public TareasDbContext(DbContextOptions<TareasDbContext> options) : base(options) { }
+
     public DbSet<Todo> Tareas => Set<Todo>();
 }
