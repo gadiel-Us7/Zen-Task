@@ -1,0 +1,150 @@
+<div class="app-wrapper">
+
+  <!-- Header -->
+  <header class="header">
+    <span class="brand">ZenTask</span>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="page-title">
+      <h1>Lista de Tareas</h1>
+      <p class="subtitle">Organiza tu día con calma y precisión.</p>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filters">
+      <button
+        *ngFor="let filter of filters"
+        class="filter-btn"
+        [class.active]="activeFilter === filter.value"
+        (click)="setFilter(filter.value)">
+        {{ filter.label }}
+      </button>
+    </div>
+
+    <!-- Task list -->
+    <div class="task-list">
+      <div
+        *ngFor="let task of filteredTasks"
+        class="task-card"
+        [class.completed]="task.completed">
+
+        <button
+          class="task-check"
+          [class.checked]="task.completed"
+          (click)="toggleTask(task.id)"
+          [attr.aria-label]="task.completed ? 'Marcar como pendiente' : 'Marcar como completada'">
+          <!-- Completed icon -->
+          <svg *ngIf="task.completed" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="9.5" fill="#16A34A" stroke="#16A34A"/>
+            <path d="M6 10L8.5 12.5L14 7.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <!-- Pending icon -->
+          <svg *ngIf="!task.completed" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="9.5" stroke="#CBD5E1" stroke-width="1"/>
+          </svg>
+        </button>
+
+        <div class="task-content">
+          <span class="task-title">{{ task.title }}</span>
+
+          <!-- Desktop meta: fecha + categoría -->
+          <div class="task-meta desktop-meta">
+            <span class="task-due">{{ task.due }}</span>
+            <span class="dot">•</span>
+            <span class="task-category">{{ task.category }}</span>
+          </div>
+
+          <!-- Mobile meta: hora (pendiente) -->
+          <div class="task-meta mobile-meta" *ngIf="!task.completed">
+            <span class="task-time">{{ task.time }}</span>
+          </div>
+
+          <!-- Mobile meta: badge + estado (completada) -->
+          <div class="task-meta mobile-meta mobile-completed-meta" *ngIf="task.completed">
+            <span class="badge-completed">COMPLETADA</span>
+            <span class="task-status">Finalizado</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- End of list indicator (mobile only) -->
+      <div class="end-of-list" *ngIf="filteredTasks.length > 0">
+        <svg viewBox="0 0 40 32" fill="none" class="end-icon">
+          <path d="M8 10L16 18L8 26" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 10L12 18L4 26" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="20" y1="10" x2="36" y2="10" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+          <line x1="20" y1="18" x2="36" y2="18" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+          <line x1="20" y1="26" x2="36" y2="26" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>FIN DE LA LISTA</span>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="filteredTasks.length === 0" class="empty-state">
+        <p>No hay tareas en esta categoría.</p>
+      </div>
+    </div>
+
+    <!-- Add task link (desktop only) -->
+    <button class="add-link" (click)="openAddModal()">
+      <span>+</span> Añadir nueva tarea
+    </button>
+  </main>
+
+  <!-- FAB button -->
+  <button class="fab" (click)="openAddModal()" aria-label="Añadir tarea">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- Add task modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>Nueva tarea</h2>
+
+      <div class="form-group">
+        <label>Título</label>
+        <input
+          type="text"
+          placeholder="¿Qué necesitas hacer?"
+          [(ngModel)]="newTask.title"
+          (keyup.enter)="addTask()"/>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha</label>
+          <select [(ngModel)]="newTask.due">
+            <option value="Hoy">Hoy</option>
+            <option value="Mañana">Mañana</option>
+            <option value="Esta semana">Esta semana</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Hora</label>
+          <input type="time" [(ngModel)]="newTask.time" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Categoría</label>
+        <select [(ngModel)]="newTask.category">
+          <option value="Trabajo">Trabajo</option>
+          <option value="Personal">Personal</option>
+          <option value="Salud">Salud</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
+        <button class="btn-add" (click)="addTask()" [disabled]="!newTask.title.trim()">Añadir</button>
+      </div>
+    </div>
+  </div>
+
+</div>

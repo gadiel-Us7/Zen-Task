@@ -1,0 +1,550 @@
+/* ===== Variables ===== */
+:host {
+  --blue-primary: #1D3FAA;
+  --blue-light: #2563EB;
+  --bg-page: #F1F5FA;
+  --bg-card: #FFFFFF;
+  --text-primary: #1A1A2E;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --border: #E2E8F0;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 8px rgba(0, 0, 0, 0.04);
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --font: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ===== Reset & base ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== App wrapper ===== */
+.app-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  font-family: var(--font);
+  color: var(--text-primary);
+  position: relative;
+}
+
+/* ===== Header ===== */
+.header {
+  padding: 20px 40px 16px;
+  background-color: var(--bg-page);
+}
+
+.brand {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue-primary);
+  letter-spacing: -0.3px;
+}
+
+/* ===== Main ===== */
+.main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 8px 24px 80px;
+}
+
+/* ===== Page title ===== */
+.page-title {
+  margin-bottom: 24px;
+}
+
+.page-title h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ===== Filters ===== */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.filter-btn {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font);
+}
+
+.filter-btn:hover {
+  border-color: var(--blue-light);
+  color: var(--blue-light);
+}
+
+.filter-btn.active {
+  background: var(--blue-primary);
+  border-color: var(--blue-primary);
+  color: #ffffff;
+}
+
+/* ===== Task list ===== */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+/* ===== Task card ===== */
+.task-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  cursor: default;
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.task-card.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.task-card.completed .task-meta {
+  opacity: 0.5;
+}
+
+/* ===== Check button ===== */
+.task-check {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.task-check:hover {
+  transform: scale(1.1);
+}
+
+.task-check svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ===== Task content ===== */
+.task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.dot {
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+/* ===== Responsive meta visibility ===== */
+
+/* Desktop: muestra fecha+categoría, oculta hora y badge */
+.desktop-meta { display: flex; }
+.mobile-meta  { display: none; }
+
+/* ===== Badge completada (mobile) ===== */
+.badge-completed {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #DCFCE7;
+  color: #15803D;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.task-status {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== End of list indicator (mobile only) ===== */
+.end-of-list {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 0 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+
+.end-icon {
+  width: 40px;
+  height: 32px;
+  opacity: 0.5;
+}
+
+/* ===== Empty state ===== */
+.empty-state {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ===== Add link ===== */
+.add-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--blue-light);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 0;
+  font-family: var(--font);
+  margin: 0 auto;
+  width: 100%;
+  justify-content: center;
+  transition: opacity 0.15s;
+}
+
+.add-link:hover {
+  opacity: 0.75;
+}
+
+/* ===== FAB ===== */
+.fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--blue-primary);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(29, 63, 170, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fab:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 20px rgba(29, 63, 170, 0.45);
+}
+
+.fab:active {
+  transform: scale(0.97);
+}
+
+.fab svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+/* ===== Form ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex: 1;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-btn);
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: var(--bg-page);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--blue-light);
+  background: #fff;
+}
+
+/* ===== Modal actions ===== */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-cancel {
+  padding: 9px 18px;
+  border-radius: var(--radius-btn);
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.15s;
+}
+
+.btn-cancel:hover {
+  background: var(--bg-page);
+}
+
+.btn-add {
+  padding: 9px 20px;
+  border-radius: var(--radius-btn);
+  border: none;
+  background: var(--blue-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.btn-add:hover:not(:disabled) {
+  background: var(--blue-light);
+}
+
+.btn-add:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile (≤ 600px)
+   ============================================================ */
+@media (max-width: 600px) {
+
+  /* Header más compacto */
+  .header {
+    padding: 16px 20px 12px;
+  }
+
+  /* Main sin margen lateral excesivo */
+  .main {
+    padding: 4px 16px 100px;
+  }
+
+  /* Título más pequeño */
+  .page-title {
+    margin-bottom: 16px;
+  }
+
+  .page-title h1 {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    display: none; /* El subtítulo no aparece en móvil */
+  }
+
+  /* Filtros: etiquetas más cortas se ajustan mejor */
+  .filters {
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  /* Cards más compactas */
+  .task-card {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+
+  .task-title {
+    font-size: 14px;
+  }
+
+  /* Mostrar meta móvil, ocultar meta desktop */
+  .desktop-meta { display: none; }
+  .mobile-meta  { display: flex; align-items: center; gap: 6px; }
+
+  /* Tareas completadas en móvil: tachado más sutil */
+  .task-card.completed .task-title {
+    text-decoration: line-through;
+    color: var(--text-muted);
+  }
+
+  /* Mostrar el indicador de fin de lista */
+  .end-of-list {
+    display: flex;
+  }
+
+  /* Ocultar el botón "Añadir nueva tarea" — en móvil se usa el FAB */
+  .add-link {
+    display: none;
+  }
+
+  /* FAB más grande y bien ubicado en móvil */
+  .fab {
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+  }
+
+  /* Modal ocupa más pantalla en móvil */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    border-radius: 20px 20px 0 0;
+    padding: 28px 20px 36px;
+    max-width: 100%;
+    animation: slideUpMobile 0.25s ease;
+  }
+
+  @keyframes slideUpMobile {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .form-row {
+    flex-direction: row; /* mantener en fila en móvil */
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — Tablet (601px – 900px)
+   ============================================================ */
+@media (min-width: 601px) and (max-width: 900px) {
+
+  .main {
+    padding: 8px 32px 80px;
+  }
+
+  .page-title h1 {
+    font-size: 24px;
+  }
+
+  /* En tablet mostramos solo la meta móvil también (hora + badge) */
+  .desktop-meta { display: none; }
+  .mobile-meta  { display: flex; align-items: center; gap: 6px; }
+
+  .end-of-list {
+    display: flex;
+  }
+
+  .add-link {
+    display: none;
+  }
+}
